@@ -614,7 +614,7 @@
         .version-selector select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.2);
         }
 
         /* Testimonials */
@@ -1404,6 +1404,119 @@
         .logout-btn:hover {
             color: var(--primary);
         }
+
+        .download-disabled {
+            position: relative;
+        }
+        .download-disabled::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 25, 47, 0.7);
+            cursor: not-allowed;
+        }
+        
+        /* Download Auth Modal */
+        .download-auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(2, 12, 27, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+        
+        .download-auth-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .download-auth-container {
+            background-color: var(--dark);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid rgba(100, 255, 255, 0.2);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+        
+        .close-download-auth {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .close-download-auth:hover {
+            color: var(--primary);
+        }
+        
+        .download-auth-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--lighter);
+            text-align: center;
+        }
+        
+        .download-auth-subtitle {
+            color: var(--gray);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .download-auth-providers {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .download-auth-provider-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid rgba(100, 255, 255, 0.2);
+            background-color: rgba(10, 25, 47, 0.5);
+            color: var(--lighter);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .download-auth-provider-btn:hover {
+            background-color: rgba(10, 25, 47, 0.8);
+            transform: translateY(-2px);
+        }
+        
+        .download-auth-provider-btn.google {
+            color: var(--lighter);
+        }
+        
+        .download-auth-footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -1429,18 +1542,18 @@
         </nav>
         
         <div class="cta-buttons">
-            <div id="auth-buttons">
-                <button class="btn btn-outline" id="login-btn">Login</button>
-                <button class="btn btn-primary" id="signup-btn">Sign Up</button>
-            </div>
-            <div id="user-profile" class="user-profile" style="display: none;">
-                <img id="user-avatar" class="user-avatar" src="" alt="User Avatar">
-                <span id="user-name" class="user-name"></span>
-                <button class="logout-btn" id="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
-            </div>
+        <div id="auth-buttons">
+            <button class="btn btn-outline" id="login-btn">Login</button>
+            <button class="btn btn-primary" id="signup-btn">Sign Up</button>
         </div>
+        <div id="user-profile" class="user-profile" style="display: none;">
+            <img id="user-avatar" class="user-avatar" src="" alt="User Avatar">
+            <span id="user-name" class="user-name"></span>
+            <button class="logout-btn" id="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </div>
         
         <button class="mobile-menu-btn">
             <i class="fas fa-bars"></i>
@@ -1454,7 +1567,7 @@
             <p class="delay-1">The ultimate professional suite that combines powerful tools with intuitive design. Experience unparalleled productivity with our cutting-edge software solution.</p>
             
             <div class="hero-buttons delay-2">
-                <button class="btn btn-primary btn-lg">
+                <button class="btn btn-primary btn-lg" id="hero-download-btn">
                     <i class="fas fa-download"></i> Download Now
                 </button>
                 <button class="btn btn-secondary btn-lg">
@@ -1556,8 +1669,8 @@
                         <i class="fab fa-windows"></i>
                     </div>
                     <h3>Windows</h3>
-                    <p>Windows 10/11 64-bit</p>
-                    <button class="btn btn-primary">
+                    <p>64-bit installer for Windows 10/11</p>
+                    <button class="btn btn-outline download-btn" data-platform="windows">
                         <i class="fas fa-download"></i> Download
                     </button>
                 </div>
@@ -1567,8 +1680,8 @@
                         <i class="fab fa-apple"></i>
                     </div>
                     <h3>MacOS</h3>
-                    <p>macOS 11.0 or later</p>
-                    <button class="btn btn-primary">
+                    <p>Universal binary for Apple Silicon & Intel</p>
+                    <button class="btn btn-outline download-btn" data-platform="macos">
                         <i class="fas fa-download"></i> Download
                     </button>
                 </div>
@@ -1578,8 +1691,8 @@
                         <i class="fab fa-linux"></i>
                     </div>
                     <h3>Linux</h3>
-                    <p>.deb, .rpm & AppImage</p>
-                    <button class="btn btn-primary">
+                    <p>.deb and .rpm packages available</p>
+                    <button class="btn btn-outline download-btn" data-platform="linux">
                         <i class="fas fa-download"></i> Download
                     </button>
                 </div>
@@ -1799,7 +1912,7 @@
         <div class="footer-content">
             <div class="footer-about">
                 <a href="#" class="footer-logo">
-                    <img src="img/logo_SENTRA_cyan.png" alt="Sentra Logo">
+                    <img src="img/logo SENTRA cyan.png" alt="Sentra Logo">
                     <span>Sentra</span>
                 </a>
                 <p>The professional productivity suite designed to help you work smarter, faster, and more securely.</p>
@@ -1858,6 +1971,7 @@
         </div>
     </footer>
 
+    <!-- Regular Auth Modal -->
     <div class="auth-modal" id="auth-modal">
         <div class="auth-container">
             <button class="close-auth" id="close-auth">
@@ -1900,6 +2014,28 @@
             <div class="auth-footer">
                 <span id="auth-switch-text">Don't have an account?</span>
                 <a href="#" id="auth-switch-btn">Sign up</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Download Auth Modal -->
+    <div class="download-auth-modal" id="download-auth-modal">
+        <div class="download-auth-container">
+            <button class="close-download-auth" id="close-download-auth">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="download-auth-title">Login to Download</h2>
+            <p class="download-auth-subtitle">Sign in with Google to access Sentra downloads</p>
+            
+            <div class="download-auth-providers">
+                <button class="download-auth-provider-btn google" id="download-google-auth">
+                    <i class="fab fa-google"></i>
+                    Continue with Google
+                </button>
+            </div>
+            
+            <div class="download-auth-footer">
+                <span>By signing in, you agree to our Terms of Service</span>
             </div>
         </div>
     </div>
@@ -2125,39 +2261,36 @@
             });
             
             // Download buttons functionality (example)
-            document.querySelectorAll('.download-card .btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const platform = this.closest('.download-card').querySelector('h3').textContent;
-                    const version = document.getElementById('version-select').value;
-                    
-                    // In a real implementation, this would redirect to the appropriate download
-                    alert(`Downloading Sentra for ${platform} (${version} version)`);
-                    
-                    // Example of actual download implementation:
-                    // let downloadUrl;
-                    // switch(platform) {
-                    //     case 'Windows':
-                    //         downloadUrl = version === 'beta' ? 'windows-beta.exe' : 'windows-stable.exe';
-                    //         break;
-                    //     case 'MacOS':
-                    //         downloadUrl = version === 'beta' ? 'macos-beta.dmg' : 'macos-stable.dmg';
-                    //         break;
-                    //     case 'Linux':
-                    //         downloadUrl = version === 'beta' ? 'linux-beta.tar.gz' : 'linux-stable.tar.gz';
-                    //         break;
-                    // }
-                    // window.location.href = downloadUrl;
+            document.querySelectorAll('.download-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const user = auth.currentUser;
+                    if (!user) {
+                        // Show download auth modal if not logged in
+                        document.getElementById('download-auth-modal').classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        // Proceed with download if logged in
+                        const platform = this.dataset.platform;
+                        const version = document.getElementById('version-select').value;
+                        alert(`Downloading Sentra for ${platform} (${version} version)`);
+                    }
                 });
             });
             
             // Hero download button
-            document.querySelector('.hero-buttons .btn-primary').addEventListener('click', function() {
-                // Detect user's OS and suggest appropriate download
-                const userOS = detectOS();
-                alert(`In a real implementation, this would download Sentra for ${userOS}`);
-                
-                // You could show a platform selector modal here
-                // showDownloadModal();
+            document.getElementById('hero-download-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                const user = auth.currentUser;
+                if (!user) {
+                    // Show download auth modal if not logged in
+                    document.getElementById('download-auth-modal').classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    // Proceed with download if logged in
+                    const userOS = detectOS();
+                    alert(`In a real implementation, this would download Sentra for ${userOS}`);
+                }
             });
             
             // Newsletter form
@@ -2191,14 +2324,14 @@
 
 
 <script>
-    // Firebase configuration - REPLACE WITH YOUR ACTUAL CONFIG
+    // Firebase configuration
     const firebaseConfig = {
-  apiKey: "AIzaSyBDkHoKXPjUUHPOc0_3obelvi5SlKCJLTQ",
-  authDomain: "sentra-a8a27.firebaseapp.com",
-  projectId: "sentra-a8a27",
-  storageBucket: "sentra-a8a27.firebasestorage.app",
-  messagingSenderId: "611105282487",
-  appId: "1:611105282487:web:0f9a9c3e46b71d496ff032"
+        apiKey: "AIzaSyBDkHoKXPjUUHPOc0_3obelvi5SlKCJLTQ",
+        authDomain: "sentra-a8a27.firebaseapp.com",
+        projectId: "sentra-a8a27",
+        storageBucket: "sentra-a8a27.firebasestorage.app",
+        messagingSenderId: "611105282487",
+        appId: "1:611105282487:web:0f9a9c3e46b71d496ff032"
     };
     
     // Initialize Firebase
@@ -2215,8 +2348,8 @@
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
     const logoutBtn = document.getElementById('logout-btn');
-    const githubAuth = document.getElementById('github-auth');
     const googleAuth = document.getElementById('google-auth');
+    const githubAuth = document.getElementById('github-auth');
     const authEmailForm = document.getElementById('auth-email-form');
     const authEmail = document.getElementById('auth-email');
     const authPassword = document.getElementById('auth-password');
@@ -2226,6 +2359,11 @@
     const authModalTitle = document.getElementById('auth-modal-title');
     const authModalSubtitle = document.getElementById('auth-modal-subtitle');
     const authPasswordGroup = document.getElementById('auth-password-group');
+    
+    // Download auth elements
+    const downloadAuthModal = document.getElementById('download-auth-modal');
+    const closeDownloadAuth = document.getElementById('close-download-auth');
+    const downloadGoogleAuth = document.getElementById('download-google-auth');
     
     // Auth state
     let isLoginMode = true;
@@ -2237,6 +2375,17 @@
             document.body.style.overflow = 'hidden';
         } else {
             authModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+    
+    // Toggle download auth modal
+    function toggleDownloadAuthModal(show) {
+        if (show) {
+            downloadAuthModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        } else {
+            downloadAuthModal.classList.remove('active');
             document.body.style.overflow = '';
         }
     }
@@ -2279,6 +2428,19 @@
         }
     }
     
+    // Google Auth
+    async function signInWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        try {
+            await auth.signInWithPopup(provider);
+            toggleAuthModal(false);
+            toggleDownloadAuthModal(false);
+        } catch (error) {
+            console.error('Google auth error:', error);
+            alert('Failed to sign in with Google: ' + error.message);
+        }
+    }
+    
     // GitHub Auth
     async function signInWithGitHub() {
         const provider = new firebase.auth.GithubAuthProvider();
@@ -2288,18 +2450,6 @@
         } catch (error) {
             console.error('GitHub auth error:', error);
             alert('Failed to sign in with GitHub: ' + error.message);
-        }
-    }
-    
-    // Google Auth
-    async function signInWithGoogle() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        try {
-            await auth.signInWithPopup(provider);
-            toggleAuthModal(false);
-        } catch (error) {
-            console.error('Google auth error:', error);
-            alert('Failed to sign in with Google: ' + error.message);
         }
     }
     
@@ -2335,11 +2485,23 @@
     loginBtn.addEventListener('click', () => {
         isLoginMode = true;
         toggleAuthModal(true);
+        // Set to login mode
+        authModalTitle.textContent = 'Welcome back to Sentra';
+        authModalSubtitle.textContent = 'Sign in to access your dashboard';
+        authSubmitBtn.textContent = 'Sign In';
+        authSwitchText.textContent = "Don't have an account?";
+        authSwitchBtn.textContent = 'Sign up';
     });
     
     signupBtn.addEventListener('click', () => {
         isLoginMode = false;
         toggleAuthModal(true);
+        // Set to signup mode
+        authModalTitle.textContent = 'Create your Sentra account';
+        authModalSubtitle.textContent = 'Get started with your productivity suite';
+        authSubmitBtn.textContent = 'Sign Up';
+        authSwitchText.textContent = "Already have an account?";
+        authSwitchBtn.textContent = 'Sign in';
     });
     
     closeAuth.addEventListener('click', () => toggleAuthModal(false));
@@ -2349,8 +2511,17 @@
         }
     });
     
-    githubAuth.addEventListener('click', signInWithGitHub);
+    // Download auth modal events
+    closeDownloadAuth.addEventListener('click', () => toggleDownloadAuthModal(false));
+    downloadAuthModal.addEventListener('click', (e) => {
+        if (e.target === downloadAuthModal) {
+            toggleDownloadAuthModal(false);
+        }
+    });
+    
     googleAuth.addEventListener('click', signInWithGoogle);
+    githubAuth.addEventListener('click', signInWithGitHub);
+    downloadGoogleAuth.addEventListener('click', signInWithGoogle);
     
     authEmailForm.addEventListener('submit', (e) => {
         e.preventDefault();
