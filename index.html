@@ -1567,9 +1567,9 @@
             <p class="delay-1">Sentra is a desktop application designed for national examination centers. It aims to simplify and improve the organization of tests by centralizing information and facilitating coordination between stakeholders.</p>
             
             <div class="hero-buttons delay-2">
-                <button class="btn btn-primary btn-lg" id="hero-download-btn">
-                    <i class="fas fa-download"></i> Download Now
-                </button>
+                <button class="btn btn-primary btn-lg download-btn" id="hero-download-btn">
+                <i class="fas fa-download"></i> Download Now
+            </button>
                 <button class="btn btn-secondary btn-lg">
                     <i class="fas fa-play"></i> Watch Demo
                 </button>
@@ -2247,37 +2247,35 @@
             });
             
             // Download buttons functionality (example)
-            document.querySelectorAll('.download-btn').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const user = auth.currentUser;
-                    if (!user) {
-                        // Show download auth modal if not logged in
-                        document.getElementById('download-auth-modal').classList.add('active');
-                        document.body.style.overflow = 'hidden';
-                    } else {
-                        // Proceed with download if logged in
-                        const platform = this.dataset.platform;
-                        const version = document.getElementById('version-select').value;
-                        alert(`Downloading Sentra for ${platform} (${version} version)`);
-                    }
-                });
-            });
-            
-            // Hero download button
-            document.getElementById('hero-download-btn').addEventListener('click', function(e) {
-                e.preventDefault();
-                const user = auth.currentUser;
-                if (!user) {
-                    // Show download auth modal if not logged in
-                    document.getElementById('download-auth-modal').classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    // Proceed with download if logged in
-                    const userOS = detectOS();
-                    alert(`In a real implementation, this would download Sentra for ${userOS}`);
-                }
-            });
+            document.querySelectorAll('.download-btn, #hero-download-btn').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const user = auth.currentUser;
+        
+        if (!user) {
+            // Show auth modal if not logged in
+            document.getElementById('download-auth-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        } else {
+            // Redirect to WeTransfer link if logged in
+            window.location.href = 'https://we.tl/t-gVaGZcALuP';
+        }
+    });
+});
+
+// Update the auth state observer to handle post-login redirect
+auth.onAuthStateChanged((user) => {
+    updateUI(user);
+    
+    // If user just logged in from download modal, redirect to WeTransfer
+    if (user && document.getElementById('download-auth-modal').classList.contains('active')) {
+        toggleDownloadAuthModal(false);
+        window.location.href = 'https://we.tl/t-gVaGZcALuP';
+    }
+});
+
+    
+
             
             // Newsletter form
             const newsletterForm = document.querySelector('.newsletter-form');
